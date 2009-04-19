@@ -1,7 +1,11 @@
 classdef Base64
     %BASE64 package for encoding and decoding messages into base64 
     
-    properties
+    properties (Constant = true)
+        ToBase64Mapping = [char('A'+(0:25)) char('a'+(0:25)) ...
+                char('0'+(0:9)) '+/'];
+        FromBase64Mapping = double([char('A'+(0:25)) char('a'+(0:25)) ...
+                char('0'+(0:9)) '+/']);                
     end
     
     methods (Static)
@@ -45,17 +49,13 @@ classdef Base64
         
         function outChar = byteToBase64Char(inByte)
             % Mapping from 6 bits to output character
-            mapArray = [char('A'+(0:25)) char('a'+(0:25)) ...
-                char('0'+(0:9)) '+/'];
-            outChar = mapArray(inByte+1);
+            outChar = Base64.ToBase64Mapping(inByte+1);
         end
         
         function outByte = base64CharToByte(inChar)
             % Mapping from base64 character to byte value
-            mapArray = double([char('A'+(0:25)) char('a'+(0:25)) ...
-                char('0'+(0:9)) '+/']);
             byteArray = uint8(0:63);
-            outByte = byteArray(double(inChar) == mapArray);
+            outByte = byteArray(double(inChar) == Base64.FromBase64Mapping);
         end
     end
     
