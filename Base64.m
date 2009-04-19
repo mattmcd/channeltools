@@ -4,8 +4,7 @@ classdef Base64
     properties (Constant = true)
         ToBase64Mapping = [char('A'+(0:25)) char('a'+(0:25)) ...
                 char('0'+(0:9)) '+/'];
-        FromBase64Mapping = double([char('A'+(0:25)) char('a'+(0:25)) ...
-                char('0'+(0:9)) '+/']);                
+        ByteArray = uint8(0:63);            
     end
     
     methods (Static)
@@ -35,15 +34,19 @@ classdef Base64
             % Find pad bytes
             padStr = inStr((end-2):end);
             padByteCount = sum(double(padStr) == double('='));
-            % Remove pad str
+            % Remove padding string characters
             inStr = inStr(1:(end-padByteCount));
+            % Convert to byte array
             inBytes = arrayfun(@Base64.base64CharToByte,inStr);
+            % Reshape into 4xN matrix for vectorised transformation
             inBytes = reshape(inBytes,4,[]);
+            % Combine the 6 bit chunks into bytes
             outBytes = [...
                 bitor(bitshift(inBytes(1,:),2), bitshift(inBytes(2,:),-4));...
                 bitor(bitshift(bitand(inBytes(2,:),15),4), bitshift(inBytes(3,:),-2));...
                 bitor(bitshift(bitand(inBytes(3,:),3),6), inBytes(4,:))];
             outBytes = outBytes(:)';
+            % Remove the pad bytes
             outBytes((end-padByteCount+1):end) = [];
         end
         
@@ -53,9 +56,8 @@ classdef Base64
         end
         
         function outByte = base64CharToByte(inChar)
-            % Mapping from base64 character to byte value
-            byteArray = uint8(0:63);
-            outByte = byteArray(double(inChar) == Base64.FromBase64Mapping);
+            % Mapping from base64 character to byte value (lower 6 bits)
+            outByte = Base64.ByteArray(inChar == Base64.ToBase64Mapping);
         end
     end
     
