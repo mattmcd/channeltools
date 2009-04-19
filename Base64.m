@@ -1,6 +1,9 @@
 classdef Base64
     %BASE64 package for encoding and decoding messages into base64 
     
+    % Copyright 2009 The MathWorks Ltd
+    % Author: Matt McDonnell (matt.mcdonnell@mathworks.co.uk)
+  
     properties (Constant = true)
         ToBase64Mapping = [char('A'+(0:25)) char('a'+(0:25)) ...
                 char('0'+(0:9)) '+/'];
@@ -25,7 +28,9 @@ classdef Base64
                 bitand(inBytes(3,:),63)];
             % Convert to char array
             outStr = Base64.ToBase64Mapping(outBytes(:)+1);
+            % Make the output string a row vector
             outStr = outStr(:)';
+            % Add padding indicator characters
             outStr = [outStr repmat('=',1,padByteCount)];
         end
         
