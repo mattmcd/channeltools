@@ -31,7 +31,7 @@ classdef Base64
             % Make the output string a row vector
             outStr = outStr(:)';
             % Add padding indicator characters
-            outStr = [outStr repmat('=',1,padByteCount)];
+            outStr((end-padByteCount+1):end) = '=';
         end
         
         function outBytes = decode(inStr)
@@ -40,8 +40,6 @@ classdef Base64
             % Find pad bytes
             padStr = inStr((end-2):end);
             padByteCount = sum(double(padStr) == double('='));
-            % Remove padding string characters
-            inStr = inStr(1:(end-padByteCount));
             % Create lookup table from ASCII value to base64 value
             lookupTable = zeros(255,1,'uint8');
             lookupTable(double(Base64.ToBase64Mapping)) = uint8(Base64.ByteArray);
